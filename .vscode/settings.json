@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "limits": "c",
+        "utility": "c",
+        "xutility": "c"
+    }
+}
