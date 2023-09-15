@@ -20,9 +20,9 @@ float m_delete = 0.25;   //Fraction of Delete
 
 int thread_count = 1;   //Default thread count is 1
 int thread_count_in;    //Thread count input from cmd line
-int test_count = 385;
-float serial_times[385];
-float parallel_times[385];
+int test_count = 100;
+float serial_times[100];
+float parallel_times[100];
 
 pthread_t* thread_handles;
 pthread_mutex_t com_mutex;
@@ -39,11 +39,11 @@ int insert_count = 0; //Insert function call count
 int delete_count = 0; //Delete function call count
 
 
-double Execute_serial(int test_id);
+float Execute_serial(int test_id);
 void* Thread_serial();
-double Execute_parallel_mutex(int thread_count_in, int test_id);
+float Execute_parallel_mutex(int thread_count_in, int test_id);
 void* Thread_mutex(void* rank);
-double Execute_parallel_rw(int thread_count_in, int test_id);
+float Execute_parallel_rw(int thread_count_in, int test_id);
 void* Thread_rw_lock(void* rank);
 void Print_op_summary();
 float calculate_std(float data[], float mean);
@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
 }
 
 
-double Execute_serial(int test_id)
+float Execute_serial(int test_id)
 {
     head_p = NULL;
     Insert_init(n, head_p);
@@ -227,7 +227,7 @@ void* Thread_serial()
 }
 
 
-double Execute_parallel_mutex(int thread_count_in, int test_id)
+float Execute_parallel_mutex(int thread_count_in, int test_id)
 {
     thread_count = thread_count_in;
     thread_handles = malloc(thread_count * sizeof(pthread_t));
@@ -281,7 +281,7 @@ void* Thread_mutex(void* rank)
 
             if (my_member < ops_per_thread * m_member) {
                 pthread_mutex_lock(&com_mutex);
-                member(val);
+                Member(val, head_p);
                 pthread_mutex_unlock(&com_mutex);
                 my_member++;
             }
@@ -294,7 +294,7 @@ void* Thread_mutex(void* rank)
 
             if (my_insert < ops_per_thread * m_insert) {
                 pthread_mutex_lock(&com_mutex);
-                insert(val);
+                Insert(val, &head_p);
                 pthread_mutex_unlock(&com_mutex);
                 my_insert++;
             }
@@ -306,7 +306,7 @@ void* Thread_mutex(void* rank)
 
             if (my_delete < ops_per_thread * m_delete) {
                 pthread_mutex_lock(&com_mutex);
-                delete(val);
+                Delete(val, &head_p);
                 pthread_mutex_unlock(&com_mutex);
                 my_delete++;
             }
@@ -320,7 +320,7 @@ void* Thread_mutex(void* rank)
 }
 
 
-double Execute_parallel_rw(int thread_count_in, int test_id)
+float Execute_parallel_rw(int thread_count_in, int test_id)
 {
     thread_count = thread_count_in;
     thread_handles = malloc(thread_count * sizeof(pthread_t));
@@ -367,7 +367,7 @@ void* Thread_rw_lock(void* rank)
 
     for (i = 0; i < ops_per_thread; i++)
     {
-        float operation_choice = (rand() % 3 + 1);
+        int operation_choice = (rand() % 3 + 1);
         val = rand() % MAX_KEY;
 
         if (operation_choice == 1)
