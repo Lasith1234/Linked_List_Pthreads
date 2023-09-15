@@ -29,11 +29,6 @@ int pop_values;
 int MAX_KEY = 65535;
 clock_t start, end;
 
-int mem_operations;
-int ins_operations;
-int del_operations;
-
-
 int main(int argc, char const *argv[])
 {
      
@@ -45,10 +40,6 @@ int main(int argc, char const *argv[])
     mMember = (float) atof(argv[4]);
     mInsert = (float) atof(argv[5]);
     mDelete = (float) atof(argv[6]);
-
-    mem_operations = tot_operations * mMember;
-    ins_operations = tot_operations * mInsert;
-    del_operations = tot_operations * mDelete;
 
     pthread_mutex_init(&com_mutex, NULL);
     pthread_mutex_init(&mutex1, NULL);
@@ -76,15 +67,8 @@ int main(int argc, char const *argv[])
     }
     
     end = clock();
-    // free(thread_handles); 
-    // return 0;
-    
     time_elapsed = ((double) (end - start)) / CLOCKS_PER_SEC;
-
     printf("execution time is : %f\n", time_elapsed);
-    // printf("%.10f\n", time_elapsed);
-    
-    // Clear_Memory();
     pthread_mutex_destroy(&com_mutex);
     pthread_mutex_destroy(&mutex1);
     free(thread_handles);
@@ -167,28 +151,50 @@ void* thread_task(void* rank) {
     int i, val;
     int ops_per_thread = tot_operations/thread_count;
 
+    int thread_member=0;
+    int thread_insert=0;
+    int thread_delete=0;
+
     for (i = 0; i < ops_per_thread; i++) {
 
         pthread_mutex_lock( &mutex1 ); 
-        // printf("OPCOUNT IS:%d thread:%d\n", OPcount, rank);
-
         pthread_mutex_unlock( &mutex1 );
 
         float operation_choice = ((float)rand() / RAND_MAX) * (1.0);
         val = rand()%MAX_KEY;
        
         if (operation_choice < mMember) {
-            pthread_mutex_lock(&com_mutex);
-            member(val);
-            pthread_mutex_unlock(&com_mutex);
+            
+            if(thread_member < ops_per_thread*mMember){
+                pthread_mutex_lock(&com_mutex);
+                member(val);
+                pthread_mutex_unlock(&com_mutex);
+                thread_member++;
+            }else{
+                i--;
+            }
+            
         } else if (operation_choice < mMember + mInsert) {
-            pthread_mutex_lock(&com_mutex);
-            insert(val);
-            pthread_mutex_unlock(&com_mutex);
+
+            if(thread_insert < ops_per_thread*mInsert){
+                pthread_mutex_lock(&com_mutex);
+                insert(val);
+                pthread_mutex_unlock(&com_mutex);
+                thread_insert++;
+            }else{
+                i--;
+            }
         } else {
-            pthread_mutex_lock(&com_mutex);
-            delete(val);
-            pthread_mutex_unlock(&com_mutex);
+
+            if(thread_delete < ops_per_thread*mDelete){
+                pthread_mutex_lock(&com_mutex);
+                delete(val);
+                pthread_mutex_unlock(&com_mutex);
+                thread_delete++;
+            }else{
+                i--;
+            }
+            
         }
     }
     return NULL;
