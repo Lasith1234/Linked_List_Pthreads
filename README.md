@@ -7,5 +7,5 @@ To compile the program, run the following command from the directory where the f
 `gcc -o main  main.c operations.c -lpthread -lm`
 
 To execute the compiled program run the following command.  
-**(Provide an integer as the THREAD_COUNT)**
+**(Provide an integer as the THREAD_COUNT)**  
 `./main THREAD_COUNT`
