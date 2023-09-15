@@ -14,9 +14,9 @@
 int n = 1000;   //Initial population element count
 int m = 10000;  //Total random operations count
 
-float m_member = 0.5;   //Fraction of Member 
-float m_insert = 0.25;   //Fraction of Insert
-float m_delete = 0.25;   //Fraction of Delete
+float m_member = 0.9;   //Fraction of Member 
+float m_insert = 0.05;   //Fraction of Insert
+float m_delete = 0.05;   //Fraction of Delete
 
 int thread_count = 1;   //Default thread count is 1
 int thread_count_in;    //Thread count input from cmd line
@@ -77,6 +77,7 @@ int main(int argc, char* argv[])
 
     for (int i = 1; i <= test_count; i++)
     {
+        srand(time(0));
         serial_time = Execute_serial(i);
         serial_time_sum += serial_time;
         serial_times[i - 1] = serial_time;
@@ -96,6 +97,7 @@ int main(int argc, char* argv[])
 
     for (int i = 1; i <= test_count; i++)
     {
+        srand(time(0));
         parallel_time_mutex = Execute_parallel_mutex(thread_count_in, i);
         parallel_time_mutex_sum += parallel_time_mutex;
         parallel_times[i - 1] = parallel_time_mutex;
@@ -115,6 +117,7 @@ int main(int argc, char* argv[])
 
     for (int i = 1; i <= test_count; i++)
     {
+        srand(time(0));
         parallel_time_rw = Execute_parallel_rw(thread_count_in, i);
         parallel_time_rw_sum += parallel_time_rw;
         parallel_times[i - 1] = parallel_time_rw;
