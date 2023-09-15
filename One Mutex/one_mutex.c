@@ -60,7 +60,6 @@ int main(int argc, char const *argv[])
     {
         pthread_create(&thread_handles[thread], NULL, thread_task, (void*) thread);
     }
-    printf("Main Thread");
     for (thread = 0; thread < thread_count; thread++)
     {
         pthread_join(thread_handles[thread], NULL);
@@ -74,7 +73,7 @@ int main(int argc, char const *argv[])
     free(thread_handles);
     return 0;
 }
-
+ 
 int member(int value){
 
     struct Node* current_node =  nodes_list_head;
